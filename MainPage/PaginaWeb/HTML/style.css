@@ -1,0 +1,315 @@
+/************************************************************************/
+/************************Login style*************************************/
+
+h1#login-title{
+  font-size: 80px;
+}
+input{
+  background-color: rgb(191, 191, 191.1);
+  border: solid white 1px;
+  border: 10px;
+}
+
+/*Class*/
+.login-form{
+  background-color: rgba(13, 13, 13, .8);
+  border: 2px solid;
+  border-color: rgb(57, 83, 93, 1);
+  border-radius: 10px;
+  color: white;
+  display: block;
+  padding: 10px 20px 10px 20px;
+  font-size: x-large;
+}
+
+/*ID*/
+#login-whole-container{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+
+
+/************************************************************************/
+/************************Login style*************************************/
+
+
+/************************************************************************/
+/************************head style*************************************/
+
+/* style for elements */
+
+/* class styles */
+
+.header-container{
+  position: relative;
+  /* background-image: url("../Img/head4.jpg");
+  background-repeat: no-repeat;
+  background-size:100%; */
+  min-height: 15vh;
+  margin-top: 0%;
+  
+
+}
+
+.tittle{
+  position: absolute;
+  top: 50%;
+  right: 50%;
+  transform: translate(50%,-50%);
+}
+
+.top-menu-button{
+  height: 30px;
+  width: 150px;
+  background-color: rgba(13, 13, 13, 1);
+  border-radius: 10px;
+  font-size: 15px;
+  color: white;
+}
+/* id styles */
+
+#icon{
+  height: 75px;
+  width: 150px;
+  left: 0px;
+}
+
+#img-div{
+  position: absolute;
+  left: 100px;
+  top: 50%;
+  transform: translate(50%, -50%);
+}
+
+#page-h1{
+  font-size: 50px;
+  margin: 20px;
+}
+
+
+/************************************************************************/
+/************************head style*************************************/
+
+
+
+
+/************************************************************************/
+/************************body style*************************************/
+
+/* style for elements*/ 
+body{
+  font-family: "Rajdhani", sans-serif;
+  background-image: url("../Img/back.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100vh;
+  margin-top: 0%;
+  
+}
+h1{
+  padding: 0px;
+  color: white;  
+}
+ol{
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(7,1fr);
+  padding: 0px;
+}
+li{
+  padding: 2px;
+  font-size: smaller;
+}
+
+a{
+  color: rgba(114, 242, 235, 1);
+  font-weight: bold;
+}
+table {
+  table-layout: fixed;
+  border-collapse: collapse;
+
+}
+
+
+
+td{
+  text-align: center;
+  border: 1px solid;
+  border-color: rgb(21, 31, 35, 1); 
+  background-color: rgb(57, 83, 93, 1);
+  position: relative;
+
+}
+th{
+  border: solid 1px;
+  border-color: rgb(21, 31, 35, 1); 
+}
+
+
+
+caption{
+  margin: 10px;
+  font-size: larger;
+  font-weight: bold;
+}
+/* style for classes .*/ 
+.whole-container{
+  display: block;
+  margin: 0%;
+  min-height: 100vh;
+  background-color: rgba(13, 13, 13, .6);
+  background-size: cover;
+}
+.header-container{
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: center;
+}
+.body-container{
+  padding-top: 10px;
+  padding-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.calendar{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-items: center;
+
+  
+}
+
+.calendar-months{
+  display: none;
+}
+
+.calendar-months.active{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  margin: 1%;
+  
+}
+.table-info{
+  display: none;
+}
+
+.table-info.active{
+  display: contents;
+}
+
+.day1-1sft-day{
+  grid-column-start: 1;
+}
+.day1-2nd-day{
+  grid-column-start: 2;
+}
+.day1-3rd-day{
+  grid-column-start: 3;
+}
+.day1-4th-day{
+  grid-column-start: 4;
+}
+.day1-5th-day{
+  grid-column-start: 5;
+}
+.day1-6th-day{
+  grid-column-start: 6;
+}
+.day1-7th-day{
+  grid-column-start: 7;
+}
+
+
+
+.q-select{
+  border-radius: 10px;
+  background-color: rgba(13, 13, 13, 1);
+  color: rgb(242, 242, 242.1);
+  height: 30px;
+  width: 50px;
+  text-align: center;
+
+}
+.q-select:hover{
+  size: 20px;
+  cursor: pointer;
+
+}
+
+.day{
+  font-weight:bold;
+}
+
+.td-div-dumm{
+  width: 200px;
+}
+
+/* style for IDs #*/ 
+
+#month-style{
+  border: solid black 1px;
+  border-radius: 15px ;
+  text-align: center;
+  width: 300px;
+  height: 210px;
+  background-color: rgb(63, 63, 63, .8);
+  color: white;
+  margin: 20px;
+  transition: 300ms;
+}
+
+#month-style:hover{
+  transform: scale(1.15);
+}
+
+#maintenance-table{
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: white !important;
+  margin: 20px !important;
+  
+
+}
+#maintenance-thead{
+  height: 50px;
+  margin: 5px;
+  background-color: rgba(38, 56, 63, 1);
+}
+
+#th-div-summ{
+  width: 200px;
+}
+#th-div-imp{
+  width: 50px;
+}
+#th-div-dat{
+  width: 100px;
+}
+#th-div-des{
+  width: 400px;
+}
+#th-div-ser{
+  width: 200;
+}
+#th-div-dur{
+  width: 100px;
+}
+#th-div-imp{
+  width: 75px;
+}
+/************************************************************************/
+/************************body style*************************************/
+
+

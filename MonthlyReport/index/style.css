@@ -1,0 +1,254 @@
+#title1{
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: larger;
+}
+#Plat-CPUMEM-Usage{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+}
+#Plat-VMs-Usage{
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+#Plat-ExternalIP-Usage{
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#Plat-Storage-Usage{
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+#Plat-Storage-Usage{
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#Plat-outages{
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.data-center{
+    border: 1px, solid black;
+}
+#Plat-DMZ-Usage{
+    text-align: center;
+}
+#DMZ-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+
+}
+
+.DMZ-row{
+    min-width: 95px;
+}
+
+
+#Plat-ExternalIP-Usage{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    max-width: 1000px;
+}
+
+#Plat-ContentPool-Usage{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    max-width: 1000px;
+}
+
+#Plat-Capacity-Usage{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    max-width: 1000px;
+}
+
+.flex-display{
+    display: inline-flex;
+}
+
+
+
+#content{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+    
+}
+
+#content > div {
+    width: 100%;
+    max-width: 1000px;
+    box-sizing: border-box; 
+}
+
+table{
+
+    align-items: center;
+    justify-content: center;
+    table-layout: fixed;
+    border-collapse: collapse;
+    position: relative;
+    min-width: 400px;
+    margin: 10px;
+    
+}
+
+
+
+td{
+    text-align: center;
+    padding: 3px;
+    border: 1px solid;
+    border-color: rgb(21, 31, 35, 1); 
+    background-color: rgb(57, 83, 93, 0.5);
+    position: relative;
+    min-width: 60px;
+    font-size: 90%;
+  }
+
+  th{
+    border: solid 1px;
+    padding: 3px;
+    font-weight: 50;
+    font-size: 95%;
+    border-color: rgb(21, 31, 35, 1); 
+    background-color: rgb(0, 0, 0, 0.7); ;
+  }
+
+body{
+    color: aliceblue;
+    font-family: "Nanum Gothic", sans-serif;
+    font-weight: lighter;
+    background-image: url("back.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 100vh;
+    margin-top: 0%;
+    font-size: 12;
+    
+    
+  }
+#whole-conteiner{
+    min-height: 100vh;
+    background-color: rgba(13, 13, 13, .6);
+    background-size: cover;
+}
+caption{
+    font-weight: lighter;
+    font-size: 11px;
+    color: rgb(145, 110, 12);
+  }
+
+
+h1{
+    font-size: 30px;
+    color: rgb(100, 100, 100, 1);
+}
+
+h2{
+    font-size: 25px;
+    color: rgb(100, 100, 100, 1);
+}
+
+p{
+    padding: 11x;
+}
+
+
+
+
+
+/* Styles for the popup */
+.image-popup {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 100%; 
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background-image: url("back.jpg"); /* Same background image as body */
+    background-repeat: no-repeat;
+    background-size: cover; /* Cover the entire popup */
+    background-position: center; /* Center the background image */
+    border: 1px solid rgba(255, 255, 255, 0.5); 
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    border-radius: 5px; 
+}
+
+.image-popup img {
+    width: 1250px; 
+    height: 550px;
+    
+}
+
+
+
+
+
+.popup-description {
+    margin-top: 10px; 
+    font-size: 14px; 
+    color: white; 
+}
+
+/* Show the popup on hover */
+.hover-element:hover .image-popup {
+    display: block;
+}
+
+/* style for content with images*/
+#general{
+    text-decoration: underline;
+}
+#red{
+    color: red;
+    text-decoration: underline;
+}
+
+#yellow{
+    color: rgb(255, 191, 0, 1);
+    text-decoration: underline;
+}
+
+#green{
+    color: green;
+    text-decoration: underline;
+}
