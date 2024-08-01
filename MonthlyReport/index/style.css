@@ -252,3 +252,35 @@ p{
     color: green;
     text-decoration: underline;
 }
+
+
+
+/*Heather*/
+
+#heather-menu {
+    display: flex;             
+    align-items: center;       
+    padding: 10px;             
+    
+}
+#return-buttom {
+    border-radius: 10px;
+    border-color: white;
+    border-style: solid;
+    margin-right: 15px;       
+    padding: 8px 12px;         
+    font-size: 10px;                  
+    background-color: rgba(13, 13, 13, 1);
+    color: rgb(242, 242, 242.1);             
+    cursor: pointer;    
+    transition: transform 0.3s ease, background-color 0.3s ease       
+}
+
+#return-buttom:hover {
+    transform: scale(1.1)
+}
+
+#heather-menu p {
+    flex-grow: 1;              
+    margin: 0;                
+}

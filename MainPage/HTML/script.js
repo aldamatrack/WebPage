@@ -18,3 +18,8 @@ function showTableContent(id) {
         }
     }
 }
+
+function redirectToPage() {
+    window.location.href = '/MonthlyReport/index/index.html'; // Relative URL on the same server
+}
+

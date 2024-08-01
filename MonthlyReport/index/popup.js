@@ -25,3 +25,9 @@ document.addEventListener('DOMContentLoaded', function () {
         
     });
 });
+
+
+
+function returnToMainPage() {
+    window.location.href = '/MainPage/HTML/index.html'; // Relative URL on the same server
+}
