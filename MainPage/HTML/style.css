@@ -103,7 +103,7 @@ input{
 /* style for elements*/ 
 body{
   font-family: "Rajdhani", sans-serif;
-  background-image: url("../Img/back.jpg");
+  background-image: url("Img/back.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   min-height: 100vh;
