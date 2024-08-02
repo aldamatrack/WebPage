@@ -23,3 +23,7 @@ function redirectToPage() {
     window.location.href = 'MonthlyReport/index/index.html'; // Relative URL on the same server
 }
 
+function loginPage() {
+    window.location.href = '../Login/index.html'
+}
+
