@@ -24,6 +24,6 @@ function redirectToPage() {
 }
 
 function loginPage() {
-    window.location.href = '../Login/index.html'
+    window.location.href = 'Login/index.html'
 }
 

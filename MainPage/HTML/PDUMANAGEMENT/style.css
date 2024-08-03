@@ -1,0 +1,136 @@
+#title1{
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: larger;
+}
+
+
+#content{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+    
+}
+
+#content > div {
+    width: 100%;
+    max-width: 1000px;
+    box-sizing: border-box; 
+}
+
+body{
+    color: aliceblue;
+    font-family: "Nanum Gothic", sans-serif;
+    font-weight: lighter;
+    background-image: url("../Img/back.jpg"); /*for production /Img/back.jpg fr testing in windows use ./Img/back.jpg*/
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 100vh;
+    margin-top: 0%;
+    font-size: 12;
+    
+    
+  }
+#whole-conteiner{
+    min-height: 100vh;
+    background-color: rgba(13, 13, 13, .6);
+    background-size: cover;
+}
+
+h1{
+    font-size: 30px;
+    color: rgb(100, 100, 100, 1);
+}
+
+h2{
+    font-size: 25px;
+    color: rgb(100, 100, 100, 1);
+}
+
+p{
+    padding: 11x;
+}
+
+
+
+
+
+
+/*Heather and retunr button*/
+
+#heather-menu {
+    display: flex;             
+    align-items: center;       
+    padding: 10px;             
+    
+}
+#return-buttom {
+    border-radius: 10px;
+    border-color: white;
+    border-style: solid;
+    margin-right: 15px;       
+    padding: 8px 12px;         
+    font-size: 10px;                  
+    background-color: rgba(13, 13, 13, 1);
+    color: rgb(242, 242, 242.1);             
+    cursor: pointer;    
+    transition: transform 0.3s ease, background-color 0.3s ease       
+}
+
+#return-buttom:hover {
+    transform: scale(1.1)
+}
+
+#heather-menu p {
+    flex-grow: 1;              
+    margin: 0;                
+}
+
+/*Table style*/
+
+table{
+
+    align-items: center;
+    justify-content: center;
+    table-layout: fixed;
+    border-collapse: collapse;
+    position: relative;
+    min-width: 400px;
+    margin: 10px;
+    
+}
+
+
+
+td{
+    text-align: center;
+    padding: 3px;
+    border: 1px solid;
+    border-color: rgb(21, 31, 35, 1); 
+    background-color: rgb(57, 83, 93, 0.5);
+    position: relative;
+    min-width: 60px;
+    font-size: 90%;
+  }
+
+  th{
+    border: solid 1px;
+    padding: 3px;
+    font-weight: 50;
+    font-size: 95%;
+    border-color: rgb(21, 31, 35, 1); 
+    background-color: rgb(0, 0, 0, 0.7); ;
+  }
+
+
+  /*modal*/
+
+  .content-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
