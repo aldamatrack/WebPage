@@ -25,7 +25,7 @@ function populateTable(data) {
     tableBody.innerHTML = '';
 
     // Create table headers
-    const headers = ['pdu_number', 'ipaddress', 'pduname', 'datacenter', 'owner', 'description','actions'];
+    const headers = ['pdu_number', 'ipaddress', 'pduname', 'datacenter', 'owner', 'description','status','actions'];
     const headerRow = document.createElement('tr');
     headers.forEach(header => {
         const th = document.createElement('th');

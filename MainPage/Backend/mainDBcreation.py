@@ -17,12 +17,12 @@ def GetData():
     conn.close()
     return data
 
-# Endpoint to send data to the frontend
+# Send data to the frontend
 @app.route("/data", methods=["GET"])
 def sentData():
     return jsonify(GetData())
 
-# Endpoint to update data in the database
+# Update data in the database
 @app.route("/update", methods=["POST"])
 def updateData():
     data = request.get_json()
