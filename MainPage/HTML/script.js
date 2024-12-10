@@ -27,3 +27,7 @@ function loginPage() {
     window.location.href = 'Login/index.html'
 }
 
+function sessionCleanerPage(){
+    window.location.href = 'ControllerManager/index.html'
+}
+
