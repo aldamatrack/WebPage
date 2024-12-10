@@ -14,3 +14,4 @@
 192.168.1.14,PDU14,RTP,vbeckers,testing PDU,active
 192.168.1.15,PDU15,SJC,amaltesc,testing PDU,active
 192.168.1.16,PDU16,RTP,amaltesc,testing PDU,active
+192.168.1.24,PDU24,RTP,amaltesc,testing PDU,active
