@@ -20,14 +20,14 @@ function showTableContent(id) {
 }
 
 function redirectToPage() {
-    window.location.href = 'MonthlyReport/index/index.html'; // Relative URL on the same server
+    window.location.href = '/MonthlyReport/index/index.html'; // Relative URL on the same server
 }
 
 function loginPage() {
-    window.location.href = 'LogIn/index.html'
+    window.location.href = '/Login/index.html'
 }
 
 function sessionCleanerPage(){
-    window.location.href = 'ControllerManager/index.html'
+    window.location.href = '/ControllerManager/index.html'
 }
 
