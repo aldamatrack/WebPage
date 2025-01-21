@@ -32,5 +32,11 @@ async function handleSessionAction(action) {
     }
 }
 
+function returnToMainPage() {
+    window.location.href = '../index.html';  //Pushing content to production take on mind working directory as root "/" for testing in windows use /MainPage/HTML/index.html
+}
+
+
 document.getElementById('cleanSessionBtn').addEventListener('click', () => handleSessionAction('clean'));
 document.getElementById('resetSessionBtn').addEventListener('click', () => handleSessionAction('reset'));
+

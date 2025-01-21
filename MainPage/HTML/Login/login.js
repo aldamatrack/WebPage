@@ -12,3 +12,7 @@ function login() {
         window.location.href = '../index.html'
     }
 }
+
+function returnToMainPage() {
+    window.location.href = '../index.html';  //Pushing content to production take on mind working directory as root "/" for testing in windows use /MainPage/HTML/index.html
+}
