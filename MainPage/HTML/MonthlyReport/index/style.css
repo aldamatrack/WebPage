@@ -156,7 +156,7 @@ body{
     color: aliceblue;
     font-family: "Nanum Gothic", sans-serif;
     font-weight: lighter;
-    background-image: url("./Img/back.jpg"); /*for production /Img/back.jpg fr testing in windows use ./Img/back.jpg*/
+    background-image: url("/Img/back.jpg"); /*for production /Img/back.jpg fr testing in windows use ./Img/back.jpg*/
     background-repeat: no-repeat;
     background-size: cover;
     min-height: 100vh;
