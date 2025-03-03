@@ -1,13 +1,16 @@
 from flask import Flask, request, jsonify
 import paramiko
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 
 # Configure the SSH connection to the CentOS VM
-HOST = "192.168.1.87"
+HOST = os.getenv("Controller_IP")
+USERNAME = os.getenv("Username")
+PASSWORD = os.getenv("Password")
 PORT = 22
-USERNAME = "admin"
-PASSWORD = "admin"  # Use an SSH key for better security
 
 
 
