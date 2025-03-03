@@ -13,7 +13,9 @@ async function handleSessionAction(action) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ session_id: sessionId })
+            
         });
+        console.log(response)
 
         if (response.ok) {
             const result = await response.json();
