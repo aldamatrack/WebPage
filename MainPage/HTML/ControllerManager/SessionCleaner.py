@@ -105,5 +105,5 @@ def run_reset_session():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    #app.run(debug=True)
     print(execute_clean_session("37624"))
