@@ -106,3 +106,4 @@ def run_reset_session():
 
 if __name__ == '__main__':
     app.run(debug=True)
+    print(execute_clean_session("37624"))
