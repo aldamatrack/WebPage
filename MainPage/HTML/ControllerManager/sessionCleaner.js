@@ -1,6 +1,7 @@
 async function handleSessionAction(action) {
-    const sessionId = document.getElementById('session_id').value;
-    document.getElementById('output').textContent = '';
+    const sessionId = document.getElementById('session_id').value.trim();
+    const outputElement = document.getElementById('output');
+    outputElement.textContent = 'Processing...';
 
     if (!sessionId) {
         alert('Please enter a Session ID.');
@@ -8,37 +9,41 @@ async function handleSessionAction(action) {
     }
 
     try {
-        const endpoint = action === 'clean' ? '/run-clean-session' : '/run-reset-session';
+        const endpoint = action === 'clean' ? 'http://localhost:5000/run-clean-session' : 'http://localhost:5000/run-reset-session';
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ session_id: sessionId })
-            
+            body: JSON.stringify({ session_id: sessionId }),
+            signal: AbortSignal.timeout(8000)
         });
-        console.log(response)
 
-        if (response.ok) {
-            const result = await response.json();
+        // Verificar tipo de contenido
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const textResponse = await response.text();
+            throw new Error(`Invalid response: ${textResponse.substring(0, 100)}`);
+        }
 
-            if (result.returncode === 0) {
-                document.getElementById('output').textContent = result.output || 'No output';
-            } else {
-                alert(`Command Error: ${result.error || 'Unknown error occurred'}`);
-            }
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Server error');
+        }
+
+        if (data.returncode !== 0) {
+            outputElement.textContent = `Error: ${data.error}`;
+            alert(`Operation failed: ${data.error}`);
         } else {
-            const error = await response.json();
-            alert(`Server Error: ${error.error || 'Unknown server error occurred'}`);
+            outputElement.textContent = data.output || 'Operation completed successfully';
         }
     } catch (err) {
-        alert(`Network Error: ${err.message}`);
+        outputElement.textContent = `Error: ${err.message}`;
+        console.error('API Error:', err);
+        alert(err.message.includes('Invalid response') ? 'Check server status' : err.message);
     }
 }
 
-function returnToMainPage() {
-    window.location.href = '/index.html';  //Pushing content to production take on mind working directory as root "/" for testing in windows use /MainPage/HTML/index.html
-}
-
-
+// Event Listeners
 document.getElementById('cleanSessionBtn').addEventListener('click', () => handleSessionAction('clean'));
 document.getElementById('resetSessionBtn').addEventListener('click', () => handleSessionAction('reset'));
-
+document.getElementById('Exit').addEventListener('click', () => window.location.href = '/index.html');
