@@ -1,10 +1,14 @@
 import psycopg2 as p
-from flask import Flask, jsonify
-from flask_cors import CORS
+
 
 def CreateNewDB():
-    conn = p.connect("dbname=ipaddress user=postgres password=root")
-
+    conn = p.connect(
+    dbname="pduips",
+    user="postgres",  #postgress user
+    password="postgres", #postgres password
+    host="192.168.1.102",       #Database IP, need to be allow the source IP and MD5 auth
+    port="5432"
+)
     cur = conn.cursor()
     # Create table with pdu_number
     cur.execute("""
@@ -16,7 +20,7 @@ def CreateNewDB():
         owner VARCHAR(50),
         description VARCHAR(50),
         status VARCHAR(50)
-    )""")
+    );""")
     print('''TABLE PDU IP created''')
 
     query = "INSERT INTO ipaddr (ipaddress, PDUname, datacenter, owner, description, status) VALUES (%s, %s, %s, %s, %s, %s);"
@@ -29,15 +33,25 @@ def CreateNewDB():
         ip.close()
 
 def DeleteTableData():
-    conn = p.connect("dbname=ipaddress user=postgres password=root")
-
+    conn = p.connect(
+    dbname="pduips",
+    user="postgres",  #postgress user
+    password="postgres", #postgres password
+    host="192.168.1.102",       #Database IP, need to be allow the source IP and MD5 auth
+    port="5432"
+)
     cur = conn.cursor()
     cur.execute("DELETE FROM ipaddr;")
     conn.commit()
 
 def DeleteTable():
-    conn = p.connect("dbname=ipaddress user=postgres password=root")
-
+    conn = p.connect(
+    dbname="pduips",
+    user="postgres",  #postgress user
+    password="postgres", #postgres password
+    host="192.168.1.102",       #Database IP, need to be allow the source IP and MD5 auth
+    port="5432"
+)
     cur = conn.cursor()
     cur.execute("DROP TABLE IF EXISTS ipaddr;")
     conn.commit()

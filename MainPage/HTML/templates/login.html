@@ -15,7 +15,9 @@
                     <form class="login-form">
                         <label for="username">Username</label><br><input type="text" id="username"><br><br>
                         <label for="password">Password</label><br><input type="text" id="password"><br><br>
-                        <button type="button" onclick="login()" class="top-menu-button">Submit</button>
+                        <button id="loginBtn" type="button" class="top-menu-button">
+                            Submit
+                        </button>
                         <button type="button" id="Exit" onclick="returnToMainPage()" class="top-menu-button">Exit</button>
                     </form>
                 </div>
@@ -23,6 +25,20 @@
             </div>
         </div>
         <script src="{{ url_for('static', filename='script.js') }}"></script>
+        <script>
+            // Read ?target=… from the URL
+            const params = new URLSearchParams(window.location.search);
+            const target = params.get('target') || 'pdu';
+          
+            // Wire the one “Submit” button to whichever login() you need
+            document.getElementById('loginBtn').addEventListener('click', () => {
+              if (target === 'controller') {
+                loginController();
+              } else {
+                login();            // your existing PDU login()
+              }
+            });
+          </script>
 
     </body>
 </html>

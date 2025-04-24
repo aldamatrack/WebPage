@@ -36,22 +36,64 @@ function returnToMainPage() {
 }
 
 // ---- Login Stub ----
-function login() {
-    const username = document.getElementById('username')?.value;
-    const password = document.getElementById('password')?.value;
-
-    // TODO: replace with real authentication
-    if (username === 'admin' && password === 'admin') {
+async function login() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+  
+    try {
+      const res = await fetch("/api/PDUauthentication");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+  
+      // flatten and trim
+      const users = data.authUsers.map(u => String(u[0]).trim());
+      const fixedPass = String(data.PDUpass).trim();
+  
+  
+      if (users.includes(username) && password === fixedPass) {
         localStorage.setItem('loggedIn', 'true');
         alert("Login successful");
         window.location.href = '/pdu';
-    } else {
+      } else {
         alert("Invalid username or password, redirecting to main page");
         window.location.href = '/';
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      alert("An error occurred during login.");
     }
-}
+  }
 
-// ---- Session Cleaner ----
+  async function loginController() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+  
+    try {
+      const res = await fetch("/api/Controllerauthentication");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+  
+      // flatten and trim
+      const users = data.authUsers.map(u => String(u[0]).trim());
+      const fixedPass = String(data.Controllerpass).trim();
+
+  
+      if (users.includes(username) && password === fixedPass) {
+        localStorage.setItem('loggedIn', 'true');
+        alert("Login successful");
+        window.location.href = '/controler';
+      } else {
+        alert("Invalid username or password, redirecting to main page");
+        window.location.href = '/';
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      alert("An error occurred during login.");
+    }
+  }
+
+
+// ---- Session Cleaner with Confirmation Prompt ----
 async function handleSessionAction(action) {
     const sessionId = document.getElementById('session_id')?.value.trim();
     const outputEl = document.getElementById('output');
@@ -59,13 +101,14 @@ async function handleSessionAction(action) {
         alert('Please enter a Session ID.');
         return;
     }
-    outputEl.textContent = 'Processing…';
+
+    outputEl.textContent = 'Processing...';
+
+    const endpoint = action === 'clean'
+        ? '/run-clean-session'
+        : '/run-reset-session';
 
     try {
-        const endpoint = action === 'clean'
-            ? '/run-clean-session'
-            : '/run-reset-session';
-
         const res = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -73,17 +116,56 @@ async function handleSessionAction(action) {
         });
 
         const data = await res.json();
-        if (data.returncode !== 0) {
-            outputEl.textContent = `Error: ${data.error}`;
-        } else {
-            outputEl.textContent = data.output || 'Success!';
+
+        if (res.status !== 200 || data.error) {
+            outputEl.textContent = `Error: ${data.error || 'Unknown error'}`;
+            return;
         }
+
+        // Display the VM's message
+        outputEl.textContent = data.output || 'Waiting for confirmation...';
+
+        // Show native confirm popup
+        const userConfirmed = window.confirm(
+            `VM Response:\n\n${data.output}\n\nDo you want to continue?`
+        );
+
+        const answer = userConfirmed ? 'y' : 'n';
+
+        // Send confirmation
+        await sendConfirmation(sessionId, answer);
+
     } catch (err) {
         console.error("Session action error:", err);
-        document.getElementById('output').textContent = `Error: ${err.message}`;
+        outputEl.textContent = `Error: ${err.message}`;
     }
 }
 
+async function sendConfirmation(sessionId, answer) {
+    const outputEl = document.getElementById('output');
+    outputEl.textContent = 'Sending confirmation...';
+
+    try {
+        const res = await fetch('/confirm-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                session_id: sessionId,
+                confirmation: answer
+            })
+        });
+
+        const data = await res.json();
+        if (res.status !== 200 || data.error) {
+            outputEl.textContent = `Error: ${data.error || 'Unknown error'}`;
+            return;
+        }
+
+        outputEl.textContent = data.result || 'Command completed.';
+    } catch (err) {
+        outputEl.textContent = `Error: ${err.message}`;
+    }
+}
 // ---- PDU Data Fetching ----
 function fetchData() {
     fetch('/data')
@@ -189,3 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchData();
     }
 });
+
+document.getElementById('cleanSessionBtn').addEventListener('click', () => handleSessionAction('clean'));
+document.getElementById('resetSessionBtn').addEventListener('click', () => handleSessionAction('reset'));
+

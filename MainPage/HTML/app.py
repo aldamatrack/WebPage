@@ -12,7 +12,7 @@ load_dotenv()
 # Initialize Flask app
 app = Flask(__name__, template_folder='templates', static_folder='static')
 CORS(app)
-
+ssh_sessions = {}
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
@@ -20,47 +20,136 @@ logging.basicConfig(level=logging.DEBUG)
 HOST = os.getenv("Controller_IP")
 USERNAME = os.getenv("Username")
 PASSWORD = os.getenv("Password")
-PORT = 22
+SSHPORT = os.getenv("SshPort")
 
-def execute_ssh_command(command):
-    """Execute an SSH command and return output, error, and status code."""
+DBPORT = os.getenv("DBport")
+DBNAME = os.getenv("DBname")
+DBUSER = os.getenv("DBuser")
+DBPASSWORD = os.getenv("DBpassword")
+DBIP= os.getenv("DBIP")
+
+PDUpassword = os.getenv("PDUpass")
+CONTROLLERpassword = os.getenv("CONTROLLERpass")
+
+
+
+
+def start_ssh_command(session_id, command):
+    """Starts an SSH command that expects interactive confirmation."""
     try:
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(HOST, port=PORT, username=USERNAME, password=PASSWORD)
-        stdin, stdout, stderr = client.exec_command(command)
-        output = stdout.read().decode().strip()
-        error = stderr.read().decode().strip()
-        client.close()
-        return output, error, 0 if not error else 1
-    except Exception as e:
-        app.logger.error(f"SSH Error: {str(e)}")
-        return "", str(e), 1
+        client.connect(HOST, port=SSHPORT, username=USERNAME, password=PASSWORD)
 
-# ------------ Session Cleaner Endpoints ------------
+        stdin, stdout, stderr = client.exec_command(command)
+
+        output = ""
+        while not stdout.channel.recv_ready():
+            pass  # wait for output
+
+        while stdout.channel.recv_ready():
+            output += stdout.channel.recv(1024).decode()
+
+        # Store session for later confirmation
+        ssh_sessions[session_id] = {
+            'stdin': stdin,
+            'stdout': stdout,
+            'stderr': stderr,
+            'client': client
+        }
+
+        return output.strip(), None
+    except Exception as e:
+        return None, str(e)
+
+
+def confirm_ssh_command(session_id, confirmation):
+    """Sends confirmation to an open SSH session."""
+    if session_id not in ssh_sessions:
+        return None, f"No active SSH session found for session_id: {session_id}"
+
+    try:
+        session = ssh_sessions.pop(session_id)  
+        stdin = session['stdin']
+        stdout = session['stdout']
+        client = session['client']
+
+        stdin.write(confirmation + '\n')
+        stdin.flush()
+
+        final_output = ""
+        while not stdout.channel.exit_status_ready():
+            while stdout.channel.recv_ready():
+                final_output += stdout.channel.recv(1024).decode()
+
+        client.close()
+        return final_output.strip(), None
+    except Exception as e:
+        return None, str(e)
+
+
 @app.route('/run-clean-session', methods=['POST'])
 def run_clean_session():
-    if not request.is_json:
-        return jsonify({'error': 'Request must be JSON'}), 400
     session_id = request.json.get('session_id')
     if not session_id:
         return jsonify({'error': 'Missing session_id'}), 400
-    output, error, code = execute_ssh_command(f"/opt/Nubi/utils.sh -cleanSessionId {session_id}")
-    return jsonify({'output': output, 'error': error, 'returncode': code})
+
+    command = f"/opt/Nubi/utils.sh -cleanSessionId {session_id}"
+    output, error = start_ssh_command(session_id, command)
+
+    if error:
+        return jsonify({'error': error}), 500
+
+    return jsonify({
+        'output': output,
+        'message': 'Confirmation required'
+    })
+
 
 @app.route('/run-reset-session', methods=['POST'])
 def run_reset_session():
-    if not request.is_json:
-        return jsonify({'error': 'Request must be JSON'}), 400
     session_id = request.json.get('session_id')
     if not session_id:
         return jsonify({'error': 'Missing session_id'}), 400
-    output, error, code = execute_ssh_command(f"/opt/Nubi/utils.sh -resetSessionId {session_id}")
-    return jsonify({'output': output, 'error': error, 'returncode': code})
 
+    command = f"/opt/Nubi/utils.sh -resetSessionId {session_id}"
+    output, error = start_ssh_command(session_id, command)
+
+    if error:
+        return jsonify({'error': error}), 500
+
+    return jsonify({
+        'output': output,
+        'message': 'Confirmation required'
+    })
+
+
+@app.route('/confirm-session', methods=['POST'])
+def confirm_session():
+    session_id = request.json.get('session_id')
+    confirmation = request.json.get('confirmation')
+
+    if not session_id or not confirmation:
+        return jsonify({'error': 'Missing session_id or confirmation'}), 400
+
+    output, error = confirm_ssh_command(session_id, confirmation)
+
+    if error:
+        return jsonify({'error': error}), 500
+
+    return jsonify({
+        'result': output,
+        'status': 'Command completed'
+    })
 # ------------ Database Endpoints ------------
 def get_data():
-    conn = p.connect("dbname=ipaddress user=postgres password=root")
+    conn = p.connect(
+    dbname=DBNAME,
+    user=DBUSER,  #postgress user
+    password=DBPASSWORD, #postgres password
+    host=DBIP,       #Database IP, need to be allow the source IP and MD5 auth
+    port=DBPORT
+)
     cur = conn.cursor()
     cur.execute("SELECT * FROM ipaddr ORDER BY pdu_number;")
     rows = cur.fetchall()
@@ -74,10 +163,48 @@ def get_data():
 def sent_data():
     return jsonify(get_data())
 
+@app.route('/api/PDUauthentication')
+def getAuthUsers():
+    conn = p.connect(
+    dbname=DBNAME,
+    user=DBUSER,  #postgress user
+    password=DBPASSWORD, #postgres password
+    host=DBIP,       #Database IP, need to be allow the source IP and MD5 auth
+    port=DBPORT
+    ) 
+    cur = conn.cursor()
+    cur.execute("SELECT username FROM authusers;")
+    authUsers = cur.fetchall()
+    print(authUsers)
+    return jsonify({"authUsers":authUsers, "PDUpass":PDUpassword})
+
+@app.route('/api/Controllerauthentication')
+def getControllerhUsers():
+    conn = p.connect(
+    dbname=DBNAME,
+    user=DBUSER,  #postgress user
+    password=DBPASSWORD, #postgres password
+    host=DBIP,       #Database IP, need to be allow the source IP and MD5 auth
+    port=DBPORT
+    ) 
+    cur = conn.cursor()
+    cur.execute("SELECT username FROM Controllerauthusers;")
+    authUsers = cur.fetchall()
+    print(authUsers)
+    return jsonify({"authUsers":authUsers, "Controllerpass":CONTROLLERpassword})
+
+
+
 @app.route('/update', methods=['POST'])
 def update_data():
     data = request.get_json()
-    conn = p.connect("dbname=ipaddress user=postgres password=root")
+    conn = p.connect(
+    dbname=DBNAME,
+    user=DBUSER,  #postgress user
+    password=DBPASSWORD, #postgres password
+    host=DBIP,       #Database IP, need to be allow the source IP and MD5 auth
+    port=DBPORT
+    )
     cur = conn.cursor()
     cur.execute(
         "UPDATE ipaddr SET ipaddress=%s WHERE pduname=%s",
