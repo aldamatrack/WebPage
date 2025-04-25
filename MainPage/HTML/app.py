@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import paramiko
@@ -6,7 +5,6 @@ import os
 import logging
 from dotenv import load_dotenv
 import psycopg2 as p
-import socket
 
 # Load environment variables
 load_dotenv()
@@ -35,105 +33,114 @@ CONTROLLERpassword = os.getenv("CONTROLLERpass")
 
 
 
-#--------Controller clear logic----------
+
 def start_ssh_command(session_id, command):
-    """Open an interactive shell, send the command, and read until a (y/n) prompt."""
+    """Starts an SSH command that expects interactive confirmation."""
     try:
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(
-            HOST,
-            port=SSHPORT,
-            username=USERNAME,
-            password=PASSWORD,
-            compress=True,
-            look_for_keys=False,
-            allow_agent=False
-        )
-        # Disable Nagle's algorithm for lower latency
-        transport = client.get_transport()
-        sock = transport.sock
-        sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        client.connect(HOST, port=SSHPORT, username=USERNAME, password=PASSWORD)
 
-        channel = transport.open_session()
-        channel.get_pty()       # Allocate a PTY so the remote will prompt interactively
-        channel.invoke_shell()  # Start the shell
-        channel.send(command + "\n")
+        stdin, stdout, stderr = client.exec_command(command)
 
-        buffer = ""
-        # Read until the prompt appears
-        while True:
-            if channel.recv_ready():
-                chunk = channel.recv(1024).decode(errors='ignore')
-                buffer += chunk
-                if "(y/n)" in buffer.lower():
-                    break
-        # Store for confirmation step
-        ssh_sessions[session_id] = (client, channel)
-        return buffer, None
+        output = ""
+        while not stdout.channel.recv_ready():
+            pass  # wait for output
+
+        while stdout.channel.recv_ready():
+            output += stdout.channel.recv(1024).decode()
+
+        # Store session for later confirmation
+        ssh_sessions[session_id] = {
+            'stdin': stdin,
+            'stdout': stdout,
+            'stderr': stderr,
+            'client': client
+        }
+
+        return output.strip(), None
     except Exception as e:
         return None, str(e)
 
 
 def confirm_ssh_command(session_id, confirmation):
-    """Send confirmation ('y' or 'n') to the open shell and read final output."""
+    """Sends confirmation to an open SSH session."""
     if session_id not in ssh_sessions:
-        return None, f"No active session for ID {session_id}"
+        return None, f"No active SSH session found for session_id: {session_id}"
 
     try:
-        client, channel = ssh_sessions.pop(session_id)
-        channel.send(confirmation.strip().lower() + "\n")
+        session = ssh_sessions.pop(session_id)  
+        stdin = session['stdin']
+        stdout = session['stdout']
+        client = session['client']
+
+        stdin.write(confirmation + '\n')
+        stdin.flush()
 
         final_output = ""
-        # Read until the process ends
-        while not channel.exit_status_ready():
-            if channel.recv_ready():
-                final_output += channel.recv(1024).decode(errors='ignore')
+        while not stdout.channel.exit_status_ready():
+            while stdout.channel.recv_ready():
+                final_output += stdout.channel.recv(1024).decode()
 
         client.close()
-        return final_output, None
+        return final_output.strip(), None
     except Exception as e:
         return None, str(e)
 
-# ----- Flask Routes -----
+
 @app.route('/run-clean-session', methods=['POST'])
 def run_clean_session():
     session_id = request.json.get('session_id')
     if not session_id:
-        return jsonify(error="Missing session_id"), 400
+        return jsonify({'error': 'Missing session_id'}), 400
 
-    cmd = f"/opt/Nubi/utils.sh -cleanSessionId {session_id}"
-    output, error = start_ssh_command(session_id, cmd)
+    command = f"/opt/Nubi/utils.sh -cleanSessionId {session_id}"
+    output, error = start_ssh_command(session_id, command)
+
     if error:
-        return jsonify(error=error), 500
-    return jsonify(output=output, need_confirmation=True)
+        return jsonify({'error': error}), 500
+
+    return jsonify({
+        'output': output,
+        'message': 'Confirmation required'
+    })
 
 
 @app.route('/run-reset-session', methods=['POST'])
 def run_reset_session():
     session_id = request.json.get('session_id')
     if not session_id:
-        return jsonify(error="Missing session_id"), 400
+        return jsonify({'error': 'Missing session_id'}), 400
 
-    cmd = f"/opt/Nubi/utils.sh -resetSessionId {session_id}"
-    output, error = start_ssh_command(session_id, cmd)
+    command = f"/opt/Nubi/utils.sh -resetSessionId {session_id}"
+    output, error = start_ssh_command(session_id, command)
+
     if error:
-        return jsonify(error=error), 500
-    return jsonify(output=output, need_confirmation=True)
+        return jsonify({'error': error}), 500
+
+    return jsonify({
+        'output': output,
+        'message': 'Confirmation required'
+    })
 
 
 @app.route('/confirm-session', methods=['POST'])
 def confirm_session():
     session_id = request.json.get('session_id')
     confirmation = request.json.get('confirmation')
-    if not session_id or confirmation not in ('y', 'n'):
-        return jsonify(error="Missing session_id or invalid confirmation"), 400
+
+    if not session_id or not confirmation:
+        return jsonify({'error': 'Missing session_id or confirmation'}), 400
 
     output, error = confirm_ssh_command(session_id, confirmation)
-    if error:
-        return jsonify(error=error), 500
-    return jsonify(output=output, status="done")
 
+    if error:
+        return jsonify({'error': error}), 500
+
+    return jsonify({
+        'result': output,
+        'status': 'Command completed'
+    })
 # ------------ Database Endpoints ------------
 def get_data():
     conn = p.connect(
