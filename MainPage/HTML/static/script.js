@@ -93,79 +93,89 @@ async function login() {
   }
 
 
-// ---- Session Cleaner with Confirmation Prompt ----
+// ---- Session Cleaner / Resetter with Native Pop-ups ----
+
 async function handleSessionAction(action) {
     const sessionId = document.getElementById('session_id')?.value.trim();
-    const outputEl = document.getElementById('output');
+    const outputEl  = document.getElementById('output');
     if (!sessionId) {
-        alert('Please enter a Session ID.');
-        return;
+        return alert('Please enter a Session ID.');
     }
 
-    outputEl.textContent = 'Processing...';
+    // show interim status
+    outputEl.textContent = 'Processing…';
 
+    // pick the right endpoint
     const endpoint = action === 'clean'
         ? '/run-clean-session'
         : '/run-reset-session';
 
     try {
+        // kick off the SSH command
         const res = await fetch(endpoint, {
-            method: 'POST',
+            method:  'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ session_id: sessionId })
+            body:    JSON.stringify({ session_id: sessionId })
         });
-
         const data = await res.json();
 
-        if (res.status !== 200 || data.error) {
+        if (!res.ok) {
             outputEl.textContent = `Error: ${data.error || 'Unknown error'}`;
             return;
         }
 
-        // Display the VM's message
-        outputEl.textContent = data.output || 'Waiting for confirmation...';
+        // show VM output up to the (y/n) prompt
+        const promptText = data.output || 'Waiting for confirmation…';
+        outputEl.textContent = promptText;
 
-        // Show native confirm popup
-        const userConfirmed = window.confirm(
-            `VM Response:\n\n${data.output}\n\nDo you want to continue?`
+        // ask user via native confirm()
+        const proceed = window.confirm(
+            `VM says:\n\n${promptText}\n\nContinue? (Y/N)`
         );
+        const answer = proceed ? 'y' : 'n';
 
-        const answer = userConfirmed ? 'y' : 'n';
-
-        // Send confirmation
+        // send their choice back
         await sendConfirmation(sessionId, answer);
 
     } catch (err) {
-        console.error("Session action error:", err);
+        console.error('Session action error:', err);
         outputEl.textContent = `Error: ${err.message}`;
     }
 }
 
 async function sendConfirmation(sessionId, answer) {
     const outputEl = document.getElementById('output');
-    outputEl.textContent = 'Sending confirmation...';
+    outputEl.textContent = 'Sending confirmation…';
 
     try {
         const res = await fetch('/confirm-session', {
-            method: 'POST',
+            method:  'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                session_id: sessionId,
+            body:    JSON.stringify({
+                session_id:  sessionId,
                 confirmation: answer
             })
         });
-
         const data = await res.json();
-        if (res.status !== 200 || data.error) {
+
+        if (!res.ok) {
             outputEl.textContent = `Error: ${data.error || 'Unknown error'}`;
             return;
         }
 
-        outputEl.textContent = data.result || 'Command completed.';
+        // final output comes back as data.output
+        const finalOutput = data.output || 'Command completed.';
+        // show it in an alert
+        window.alert(`Final VM output:\n\n${finalOutput}`);
+        // and also update the on-page div
+        outputEl.textContent = finalOutput;
+
     } catch (err) {
+        console.error('Confirmation error:', err);
         outputEl.textContent = `Error: ${err.message}`;
     }
 }
+
 // ---- PDU Data Fetching ----
 function fetchData() {
     fetch('/data')
